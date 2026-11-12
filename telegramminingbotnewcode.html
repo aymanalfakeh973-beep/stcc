@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعدين Siticoin الفاخر</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-glow: rgba(56, 189, 248, 0.2);
+            --primary: #38bdf8;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { width: 100%; max-width: 420px; }
+        
+        /* الهيدر */
+        .header { text-align: center; margin-bottom: 25px; }
+        .logo-icon { font-size: 40px; margin-bottom: 8px; filter: drop-shadow(0 0 10px rgba(56,189,248,0.4)); }
+        .header h1 { font-size: 24px; color: var(--primary); font-weight: 800; letter-spacing: 0.5px; }
+        .header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+        /* البطاقات الزجاجية الفخمة */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        /* صندوق التعدين */
+        .mining-box { text-align: center; position: relative; overflow: hidden; }
+        .mining-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);
+            z-index: 0;
+        }
+        .section-title { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; position: relative; z-index: 1; }
+        .balance-num { font-size: 38px; font-weight: 900; color: var(--accent); margin: 10px 0; direction: ltr; text-shadow: 0 0 20px rgba(16,185,129,0.3); position: relative; z-index: 1; }
+        .currency-tag { font-size: 13px; color: var(--warning); font-weight: bold; letter-spacing: 1px; position: relative; z-index: 1; }
+        .speed-info { font-size: 12px; color: var(--primary); margin-top: 10px; background: rgba(56,189,248,0.1); padding: 6px 12px; border-radius: 20px; display: inline-block; position: relative; z-index: 1; }
+
+        /* الأزرار والحقول */
+        .btn {
+            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+            color: white; border: none; width: 100%; padding: 14px;
+            border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;
+            margin-top: 12px; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-green { background: linear-gradient(135deg, #059669 0%, #047857 100%); box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
+        .btn-orange { background: linear-gradient(135deg, #d97706 0%, #b45309 100%); box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4); }
+        
+        select, input {
+            width: 100%; padding: 12px; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: white;
+            border-radius: 10px; margin-top: 8px; margin-bottom: 12px; font-size: 14px;
+            outline: none; transition: border-color 0.3s;
+        }
+        select:focus, input:focus { border-color: var(--primary); }
+        .card-heading { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        
+        .footer-note { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-icon">🪙</div>
+        <h1>Siticoin Cloud Mining</h1>
+        <p>نظام التعدين اللامركزي الآمن والموثوق</p>
+    </div>
+
+    <!-- بطاقة التعدين الحية -->
+    <div class="card mining-box">
+        <div class="section-title">رصيدك المعدن الحالي</div>
+        <div class="balance-num" id="balanceDisplay">0.000000</div>
+        <div class="currency-tag">SITICOIN</div>
+        <div class="speed-info" id="speedDisplay">السرعة الحالية: 🐢 بطيئة (1x - مجاني)</div>
+    </div>
+
+    <!-- باقات السرعة -->
+    <div class="card">
+        <div class="card-heading">⚡ تسريع التعدين</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">اختر باقة لتعزيز طاقة التعدين الخاصة بك:</p>
+        <select id="speedPackage">
+            <option value="0">🐢 السرعة البطيئة (مجاني - 1x)</option>
+            <option value="3">⚡ السرعة الأولى ($3 - مضاعفة 3x)</option>
+            <option value="5">🚀 السرعة الوسطى ($5 - مضاعفة 6x)</option>
+            <option value="10">🔥 السرعة القصوى ($10 - مضاعفة 15x)</option>
+        </select>
+        <button class="btn btn-orange" onclick="handleSpeedAction()">تفعيل الباقة المطلوبة</button>
+    </div>
+
+    <!-- سحب الأرباح -->
+    <div class="card">
+        <div class="card-heading">💸 سحب الأرباح الفوري</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">الحد الأدنى للسحب: 100 Siticoin</p>
+        <input type="text" id="walletInput" placeholder="أدخل عنوان محفظتك (0x...)">
+        <button class="btn btn-green" onclick="requestWithdraw()">سحب الرصيد للمحفظة</button>
+    </div>
+
+    <!-- دعوة الأصدقاء -->
+    <div class="card">
+        <div class="card-heading">👥 دعوة الأصدقاء</div>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">احصل على مكافأة 1 Siticoin لكل صديق تدعوه:</p>
+        <input type="text" id="refLink" readonly value="https://t.me/YourBot?start=ref">
+        <button class="btn" style="background: #334155;" onclick="copyRef()">نسخ رابط الإحالة</button>
+    </div>
+
+    <div class="footer-note">Secure Web3 Integration • Siticoin Ecosystem © 2026</div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // حفظ بيانات التعدين محلياً
+    let minerData = JSON.parse(localStorage.getItem('siticoin_pro_miner')) || {
+        balance: 0.0,
+        lastTime: Date.now(),
+        multiplier: 1
+    };
+
+    const BASE_RATE = 0.0008; // معدل التعدين الأساسي
+
+    // حساب التعدين التراكمي أثناء إغلاق التطبيق
+    function calculateMining() {
+        const now = Date.now();
+        const elapsedSeconds = (now - minerData.lastTime) / 1000;
+        if (elapsedSeconds > 0) {
+            minerData.balance += elapsedSeconds * BASE_RATE * minerData.multiplier;
+            minerData.lastTime = now;
+            saveMiner();
+        }
+    }
+
+    function saveMiner() {
+        localStorage.setItem('siticoin_pro_miner', JSON.stringify(minerData));
+    }
+
+    function refreshUI() {
+        document.getElementById("balanceDisplay").innerText = minerData.balance.toFixed(6);
+        let label = "🐢 بطيئة (1x - مجاني)";
+        if (minerData.multiplier === 3) label = "⚡ السرعة الأولى (3x)";
+        if (minerData.multiplier === 6) label = "🚀 السرعة الوسطى (6x)";
+        if (minerData.multiplier === 15) label = "🔥 السرعة القصوى (15x)";
+        document.getElementById("speedDisplay").innerText = "السرعة الحالية: " + label;
+    }
+
+    calculateMining();
+    refreshUI();
+
+    // عداد مباشر كل ثانية
+    setInterval(() => {
+        const now = Date.now();
+        const delta = (now - minerData.lastTime) / 1000;
+        minerData.balance += delta * BASE_RATE * minerData.multiplier;
+        minerData.lastTime = now;
+        saveMiner();
+        refreshUI();
+    }, 1000);
+
+    function handleSpeedAction() {
+        const val = document.getElementById("speedPackage").value;
+        if (val === "0") {
+            minerData.multiplier = 1;
+            saveMiner();
+            refreshUI();
+            tg.showAlert("✅ تم تفعيل السرعة البطيئة المجانية بنجاح.");
+        } else {
+            const payload = JSON.stringify({ action: "upgrade", package_usd: val });
+            tg.sendData(payload);
+        }
+    }
+
+    function requestWithdraw() {
+        const wallet = document.getElementById("walletInput").value.trim();
+        if (!wallet.startsWith("0x") || wallet.length !== 42) {
+            tg.showAlert("❌ يرجى إدخال عنوان محفظة EVM صالح (يبدأ بـ 0x ومكون من 42 حرفاً).");
+            return;
+        }
+        if (minerData.balance < 100) {
+            tg.showAlert(`❌ عذراً رصيدك الحالي (${minerData.balance.toFixed(2)}) أقل من الحد الأدنى للسحب (100 Siticoin).`);
+            return;
+        }
+
+        const amountToWithdraw = minerData.balance.toFixed(4);
+        minerData.balance = 0;
+        saveMiner();
+        refreshUI();
+
+        const payload = JSON.stringify({ action: "withdraw", wallet: wallet, amount: amountToWithdraw });
+        tg.sendData(payload);
+    }
+
+    function copyRef() {
+        const refInput = document.getElementById("refLink");
+        refInput.select();
+        navigator.clipboard.writeText(refInput.value);
+        tg.showAlert("📋 تم نسخ رابط الدعوة الخاص بك بنجاح!");
+    }
+</script>
+
+</body>
+</html>
